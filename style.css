@@ -1,0 +1,331 @@
+*,
+::after,
+::before {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --font-sm: 1.6rem;
+  --font-xs: 1.4rem;
+}
+
+html {
+  font-size: 62.5%;
+}
+
+body {
+  font-size: var(--font-sm);
+  font-family: "Ubuntu", sans-serif;
+  min-height: 100vh;
+  max-width: 144rem;
+  background-color: hsl(217, 100%, 97%);
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.container {
+  width: 85rem;
+  height: 56rem;
+  padding: 2rem;
+  display: grid;
+  grid-template-columns: 24rem 1fr;
+  column-gap: 4.8rem;
+  border-radius: 1rem;
+  background-color: hsl(0, 0%, 100%);
+}
+
+.section-left {
+  border-radius: 1rem;
+  background-image: url(assets/images/bg-sidebar-desktop.svg);
+}
+
+.menu {
+  font-size: var(--font-xs);
+  padding: 2rem;
+  text-transform: uppercase;
+}
+
+.options {
+  display: flex;
+  align-items: center;
+  gap: 1.6rem;
+  margin-bottom: 2.4rem;
+}
+
+.menu .options:last-child {
+  margin-bottom: none;
+}
+
+.option-count {
+  width: 4.2rem;
+  height: 4.2rem;
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: hsl(0, 0%, 100%);
+  border: 2px solid hsl(0, 0%, 100%);
+  border-radius: 100%;
+  display: grid;
+  place-content: center;
+}
+
+.selected {
+  background-color: hsl(206, 94%, 87%);
+  color: hsl(213, 96%, 18%);
+}
+.option-description p:first-child {
+  color: hsl(228, 100%, 84%);
+}
+.option-description p:last-child {
+  color: hsl(229, 24%, 87%);
+  font-weight: bold;
+}
+
+.section-right {
+  padding: 4.8rem;
+  position: relative;
+}
+
+.heading-primary,
+.heading-secondary {
+  color: hsl(213, 96%, 18%);
+  /* margin-bottom: 1rem; */
+  margin-bottom: 0.5rem;
+}
+
+.description {
+  color: hsl(231, 11%, 63%);
+  margin-bottom: 2.4rem;
+}
+
+.personal-info-form {
+  position: relative;
+}
+.personal-info-form div {
+  margin-bottom: 2.4rem;
+}
+
+.mode-container label {
+  display: block;
+  color: hsl(213, 96%, 18%);
+  margin-bottom: 0.5rem;
+}
+
+.personal-info-form input {
+  width: 100%;
+  border: 0;
+  padding: 1em;
+  color: hsl(213, 96%, 18%);
+  border-radius: 5px;
+  border: 2px solid hsl(229, 24%, 87%);
+  position: relative;
+}
+
+.personal-info-form input:hover {
+  cursor: pointer;
+}
+.personal-info-form input:focus {
+  border: 1.5px solid hsl(243, 100%, 62%);
+  outline: none;
+}
+
+/* Plan Choice Section */
+.plans {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2.8rem;
+}
+
+.plan {
+  width: 100%;
+  height: 18rem;
+  position: relative;
+}
+
+.plans input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.plan-container {
+  border: 2px solid hsl(231, 11%, 63%);
+  border-radius: 1rem;
+  padding: 1rem;
+}
+
+.plan-container:hover {
+  cursor: pointer;
+  border: 2px solid hsl(213, 96%, 18%);
+}
+
+.plan input[type="radio"]:checked + label .plan-container {
+  border: 2px solid hsl(213, 96%, 18%);
+}
+
+.plan-icons {
+  width: 3.4rem;
+  margin-bottom: 2.8rem;
+}
+
+.heading-secondary,
+.heading-secondary + p {
+  font-size: var(--font-xs);
+}
+
+.heading-secondary + p {
+  color: hsl(231, 11%, 63%);
+}
+
+/* Switch plan toggle btn */
+
+.mode-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  font-size: var(--font-xs);
+  font-weight: bold;
+}
+
+.toggle-btn {
+  width: 35px;
+  height: 1.5rem;
+  background-color: blue;
+  padding: 0.3rem;
+  border-radius: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+}
+
+.toggle-btn input[type="radio"] {
+  width: 15px;
+  height: 15px;
+  position: absolute;
+  z-index: 9999;
+  top: 0;
+  opacity: 0;
+}
+
+.circle {
+  width: 10px;
+  height: 10px;
+  border-radius: 100%;
+}
+
+#montly-plan {
+  left: 0;
+}
+
+#yearly-plan {
+  right: 0;
+}
+
+#monthly-plan:checked + .circle1 {
+  background-color: white;
+}
+
+#yearly-plan:checked + .circle2 {
+  background-color: white;
+}
+
+/*  END  */
+
+/* ADD-ONS SECTION */
+.services-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2.4rem;
+}
+
+.service {
+  cursor: pointer;
+  border: 1px solid hsl(243, 100%, 62%);
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 1.6rem;
+}
+
+input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+}
+
+.add-ons-price {
+  justify-self: flex-end;
+  color: hsl(243, 100%, 62%);
+}
+
+/* THANKYOU SECTION */
+.thankyou-sec {
+  height: 100%;
+  display: grid;
+  place-content: center;
+}
+
+.form-submission-ack {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+}
+
+.form-submission-ack .description {
+  text-align: center;
+}
+
+.plan-section,
+.add-ons-section,
+.thankyou-sec,
+.final-submission {
+  display: none;
+}
+
+.btn-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 80%;
+
+  position: absolute;
+  bottom: 25px;
+}
+
+.btn {
+  border: 0;
+  border-radius: 1rem;
+  padding: 0.6em 1.2em;
+  background-color: hsl(213, 96%, 18%);
+  color: hsl(217, 100%, 97%);
+  cursor: pointer;
+  font-size: var(--font-xs);
+}
+
+.btn:hover {
+  color: hsl(213, 96%, 18%);
+  background-color: hsl(0, 0%, 100%);
+}
+
+/* .btn-container {
+  display: none;
+} */
+.btn--go-back {
+  display: none;
+}
+
+.attribution {
+  font-size: 11px;
+  text-align: center;
+}
+.attribution a {
+  color: hsl(228, 45%, 44%);
+}
