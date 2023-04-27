@@ -45,6 +45,24 @@ const yearlyPlan = [
     imgUrl: "icon-pro.svg",
   },
 ];
+
+const servicesOffered = [
+  {
+    name: "Online service",
+    description: "Access to multiplayer games",
+    price: 1,
+  },
+  {
+    name: "Large storage",
+    description: "Extra 1TB of cloud save",
+    price: 2,
+  },
+  {
+    name: "Customizable Profile",
+    description: "Custom theme on your profile",
+    price: 2,
+  },
+];
 let currentState = "info";
 
 function selectPlan(planObj) {
@@ -143,10 +161,23 @@ function addOnStep(planObj) {
     '.plan input[type="radio"]:checked'
   );
   const temp = selectedPlan.value;
-  console.log(temp);
+
   selectedPlan = temp.slice(0, -1);
   planObj.planChoosed = selectedPlan;
-  console.log("ads on step ", planObj);
+  const ctn = document.querySelector(".services-container");
+  ctn.innerHTML = "";
+  createServices(ctn, planObj);
+
+  nextBtn.removeEventListener("click", addOnStep);
+  nextBtn.addEventListener("click", goToSummary);
+}
+
+function goToSummary(planObj) {
+  optionCountEls[2].classList.remove("selected");
+  optionCountEls[3].classList.add("selected");
+
+  addOnsSectionEl.style.display = "none";
+  finalSubmissionSectionEl.style.display = "block";
 }
 
 function displayPlans(plans) {
@@ -200,5 +231,51 @@ function createParaEl() {
   paraEl.style.position = "absolute";
   paraEl.style.right = "5px";
   return paraEl;
+}
+
+function createServices(ctn, planObj) {
+  for (let i = 0; i < servicesOffered.length; i++) {
+    const service = servicesOffered[i];
+    let serviceName = service.name.toLowerCase();
+    serviceName = serviceName.replace(/\s+/g, "-");
+
+    const parentDiv = document.createElement("div");
+    parentDiv.classList.add("service");
+    const checkboxEl = `<input type="checkbox" name="add-ons" id=${serviceName} value=${serviceName} />`;
+
+    const childDiv = document.createElement("div");
+    childDiv.classList.add("service-description");
+    const labelEl = `<label for=${serviceName}>
+    <h2 class="heading-secondary">${service.name}</h2>
+    <p>${service.description}</p>
+  </label>`;
+
+    const paraEl = `<p>+$<span class="add-ons-price">${service.price}</span>/mo</p>`;
+    parentDiv.innerHTML = checkboxEl;
+    parentDiv.appendChild(childDiv);
+    childDiv.innerHTML = labelEl;
+    parentDiv.innerHTML += paraEl;
+    parentDiv.addEventListener("click", getService.bind(null, planObj));
+    ctn.appendChild(parentDiv);
+  }
+}
+
+function getService(planObj) {
+  const servicesChoosed = [];
+  const serviceEls = document.querySelectorAll(".service");
+  for (let i = 0; i < serviceEls.length; i++) {
+    const addOn = {};
+    const el = serviceEls[i];
+    const isChecked = el.querySelector('input[type="checkbox"').checked;
+
+    if (isChecked) {
+      addOn.serviceName = el.querySelector(".heading-secondary").textContent;
+      addOn.price = el.querySelector(".add-ons-price").textContent;
+      servicesChoosed.push(addOn);
+    }
+  }
+  planObj.services = servicesChoosed;
+  console.log(servicesChoosed);
+  console.log(planObj);
 }
 nextBtn.addEventListener("click", validateField);

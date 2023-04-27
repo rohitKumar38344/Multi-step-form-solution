@@ -254,6 +254,10 @@ body {
   padding: 1.6rem;
 }
 
+/* .service-description {
+  display: flex;
+} */
+
 input[type="checkbox"] {
   width: 16px;
   height: 16px;
