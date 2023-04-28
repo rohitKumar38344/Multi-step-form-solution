@@ -5,6 +5,8 @@ const optionCountEls = document.querySelectorAll(".option-count");
 const planSectionEl = document.querySelector(".plan-section");
 const addOnsSectionEl = document.querySelector(".add-ons-section");
 const finalSubmissionSectionEl = document.querySelector(".final-submission");
+const thankyouSectionEl = document.querySelector(".thankyou-sec");
+const btnContainerEl = document.querySelector(".btn-container");
 
 const infoFormEl = document.querySelector(".personal-info-form");
 const nextBtn = document.querySelector(".btn--next");
@@ -88,10 +90,10 @@ function selectPlan(planObj) {
     }
   };
 
-  const monthly = document.getElementById("monthly-plan");
-  const yearly = document.getElementById("yearly-plan");
-  monthly.addEventListener("click", paymentMode);
-  yearly.addEventListener("click", paymentMode);
+  const monthlyRadioBtn = document.getElementById("monthly-plan");
+  const yearlyRadioBtn = document.getElementById("yearly-plan");
+  monthlyRadioBtn.addEventListener("click", paymentMode);
+  yearlyRadioBtn.addEventListener("click", paymentMode);
 }
 
 function createPlan(planType, planData, planObj) {
@@ -121,11 +123,14 @@ function createPlan(planType, planData, planObj) {
     headingEl.setAttribute("class", "heading-secondary");
     const paraEl = document.createElement("p");
 
+    cardContent.appendChild(headingEl);
     let spanEl;
     if (planType == "monthly") {
-      spanEl = `$<span class=${planName}-price>${plan.price}/mo`;
+      cardContent.innerHTML += `<p>$<span class="price">${plan.price}</span>/mo</p>`;
+      // spanEl = `$<span class="price">${plan.price}/mo`;
     } else {
-      spanEl = `$<span class=${planName}-price>${plan.price}/yo`;
+      cardContent.innerHTML += `<p>$<span class="price">${plan.price}</span>/yo</p>`;
+      // spanEl = `$<span class="price">${plan.price}/yo`;
     }
 
     paraEl.innerHTML = spanEl;
@@ -135,8 +140,8 @@ function createPlan(planType, planData, planObj) {
     labelEl.appendChild(containerEl);
     containerEl.appendChild(imgEl);
     containerEl.append(cardContent);
-    cardContent.appendChild(headingEl);
-    cardContent.appendChild(paraEl);
+
+    // cardContent.appendChild(paraEl);
 
     if (planType == "yearly") {
       const content = document.createElement("p");
@@ -160,16 +165,29 @@ function addOnStep(planObj) {
   let selectedPlan = document.querySelector(
     '.plan input[type="radio"]:checked'
   );
+
+  const labelEl = document.querySelector(`label[for=${selectedPlan.id}]`);
+  const selectedPlanPrice = labelEl.querySelector(".price").textContent;
+  let planModeChoose = document.querySelector(
+    '.toggle-btn input[type="radio"]:checked'
+  );
+
   const temp = selectedPlan.value;
 
   selectedPlan = temp.slice(0, -1);
-  planObj.planChoosed = selectedPlan;
+  // plan.name = selectedPlan;
+  planObj.plan = {
+    plan: selectedPlan,
+    mode: planModeChoose.value,
+    price: selectedPlanPrice, // price needs to be added
+  };
+  // console.log(planObj);
   const ctn = document.querySelector(".services-container");
   ctn.innerHTML = "";
-  createServices(ctn, planObj);
+  createServices(ctn, planObj, planModeChoose.value);
 
   nextBtn.removeEventListener("click", addOnStep);
-  nextBtn.addEventListener("click", goToSummary);
+  nextBtn.addEventListener("click", goToSummary.bind(null, planObj));
 }
 
 function goToSummary(planObj) {
@@ -178,6 +196,44 @@ function goToSummary(planObj) {
 
   addOnsSectionEl.style.display = "none";
   finalSubmissionSectionEl.style.display = "block";
+  const billingAreaEl = document.querySelector(".billing-area");
+  const headingEl = billingAreaEl.querySelector(".heading-secondary");
+  let totalBill = 0;
+
+  const planSelected = planObj.plan;
+  console.log("plan selected ", planSelected);
+  headingEl.innerHTML = `${planSelected.plan}(${planSelected.mode})`;
+
+  const planChoosedEl = billingAreaEl.querySelector(".plan-choosed");
+  planChoosedEl.querySelector("p").innerHTML = `$<span class="plan-price">${
+    planSelected.price
+  }</span>/${planSelected.mode == "monthly" ? "mo" : "yo"}</p>`;
+  totalBill += Number(planSelected.price);
+
+  const parentDiv = billingAreaEl.querySelector(".add-ons-bill");
+  parentDiv.innerHTML = "";
+  for (let plan of planObj.services) {
+    const div = document.createElement("div");
+    div.classList.add("display-flex");
+    const serviceName = `<p>${plan.serviceName}</p>`;
+    const servicePrice = `<p class="add-ons-price">+${plan.price}$/mo</p>`;
+    totalBill += Number(plan.price);
+    div.innerHTML = serviceName;
+    div.innerHTML += servicePrice;
+    parentDiv.appendChild(div);
+  }
+  const amountSpanEl = billingAreaEl.querySelector(".amount");
+  amountSpanEl.textContent = totalBill;
+
+  nextBtn.removeEventListener("click", goToSummary);
+  nextBtn.addEventListener("click", displayFinalMessage);
+  displayFinalMessage();
+}
+
+function displayFinalMessage() {
+  finalSubmissionSectionEl.style.display = "none";
+  thankyouSectionEl.style.display = "block";
+  btnContainerEl.style.display = "none";
 }
 
 function displayPlans(plans) {
@@ -219,7 +275,7 @@ function validateField(ev) {
     planObject.userEmail = userEmail.value;
     planObject.userContact = userContact.value;
     ev.preventDefault();
-    console.log("validate field ", planObject);
+    // console.log("validate field ", planObject);
     selectPlan(planObject);
   }
 }
@@ -233,7 +289,7 @@ function createParaEl() {
   return paraEl;
 }
 
-function createServices(ctn, planObj) {
+function createServices(ctn, planObj, planMode) {
   for (let i = 0; i < servicesOffered.length; i++) {
     const service = servicesOffered[i];
     let serviceName = service.name.toLowerCase();
@@ -250,7 +306,12 @@ function createServices(ctn, planObj) {
     <p>${service.description}</p>
   </label>`;
 
-    const paraEl = `<p>+$<span class="add-ons-price">${service.price}</span>/mo</p>`;
+    let paraEl = "";
+    if (planMode == "monthly") {
+      paraEl = `<p>+$<span class="add-ons-price">${service.price}</span>/mo</p>`;
+    } else {
+      paraEl = `<p>+$<span class="add-ons-price">${service.price}</span>/yo</p>`;
+    }
     parentDiv.innerHTML = checkboxEl;
     parentDiv.appendChild(childDiv);
     childDiv.innerHTML = labelEl;
@@ -276,6 +337,6 @@ function getService(planObj) {
   }
   planObj.services = servicesChoosed;
   console.log(servicesChoosed);
-  console.log(planObj);
+  // console.log(planObj);
 }
 nextBtn.addEventListener("click", validateField);
