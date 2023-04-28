@@ -227,7 +227,6 @@ function goToSummary(planObj) {
 
   nextBtn.removeEventListener("click", goToSummary);
   nextBtn.addEventListener("click", displayFinalMessage);
-  displayFinalMessage();
 }
 
 function displayFinalMessage() {
