@@ -102,10 +102,11 @@ body {
   margin-bottom: 2.4rem;
 }
 
-.personal-info-form {
+.info-section {
   position: relative;
 }
-.personal-info-form div {
+
+.info-section div {
   margin-bottom: 2.4rem;
 }
 
@@ -115,7 +116,7 @@ body {
   margin-bottom: 0.5rem;
 }
 
-.personal-info-form input {
+.info-section input {
   width: 100%;
   border: 0;
   padding: 1em;
@@ -125,25 +126,33 @@ body {
   position: relative;
 }
 
-.personal-info-form input:hover {
+.info-section input:hover {
   cursor: pointer;
 }
-.personal-info-form input:focus {
+
+.info-section input:focus {
   border: 1.5px solid hsl(243, 100%, 62%);
   outline: none;
 }
 
+.form-page {
+  display: none;
+}
+
+#step1 {
+  display: block;
+}
 /* Plan Choice Section */
 .plans {
   display: flex;
   gap: 1rem;
-  margin-bottom: 2.8rem;
+  height: 20rem;
+  margin-bottom: 3.8rem;
 }
 
 .plan {
   width: 100%;
-  height: 18rem;
-  position: relative;
+  height: 100%;
 }
 
 .plans input[type="radio"] {
@@ -336,21 +345,20 @@ input[type="checkbox"] {
   text-align: center;
 }
 
-.plan-section,
+/* .plan-section,
 .add-ons-section,
-.thankyou-sec,
-.final-submission {
+.final-submission
+*/
+.thankyou-sec {
   display: none;
 }
 
 .btn-container {
+  width: 80%;
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  width: 80%;
-
   position: absolute;
-  bottom: 25px;
+  bottom: 3.6rem;
 }
 
 .btn {
@@ -361,18 +369,17 @@ input[type="checkbox"] {
   font-size: var(--font-xs);
 }
 
-.btn--next {
+.next-btn {
   background-color: hsl(213, 96%, 18%);
   color: hsl(217, 100%, 97%);
 }
 
-.btn--next:hover {
+.next-btn:hover {
   color: hsl(213, 96%, 18%);
   background-color: hsl(0, 0%, 100%);
 }
 
-.btn--go-back {
-  display: none;
+.prev-btn {
   color: hsl(231, 11%, 63%);
   background-color: hsl(0, 0%, 100%);
 }

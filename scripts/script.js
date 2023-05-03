@@ -8,9 +8,62 @@ const finalSubmissionSectionEl = document.querySelector(".final-submission");
 const thankyouSectionEl = document.querySelector(".thankyou-sec");
 const btnContainerEl = document.querySelector(".btn-container");
 
-const infoFormEl = document.querySelector(".personal-info-form");
-const nextBtn = document.querySelector(".btn--next");
-const prevBtn = document.querySelector(".btn--go-back");
+const form = document.getElementById("multi-step-form");
+const prevBtns = document.querySelectorAll(".prev-btn");
+const nextBtns = document.querySelectorAll(".next-btn");
+const formPages = document.querySelectorAll(".form-page");
+let currentPage = 0;
+const plan = {};
+
+function showPage(pageNum) {
+  formPages[currentPage].style.display = "none";
+  formPages[pageNum].style.display = "block";
+  currentPage = pageNum;
+  switch (pageNum) {
+    case 0:
+      optionCountEls[0].classList.add("selected");
+      break;
+    case 1:
+      optionCountEls[0].classList.remove("selected");
+      optionCountEls[1].classList.add("selected");
+      break;
+    case 2:
+      optionCountEls[1].classList.remove("selected");
+      optionCountEls[2].classList.add("selected");
+      break;
+    case 3:
+      optionCountEls[2].classList.remove("selected");
+      optionCountEls[3].classList.add("selected");
+      break;
+
+    default:
+      console.log("Hello world");
+      break;
+  }
+}
+
+// Initialize the form by showing the first page
+showPage(0);
+
+// Event listeners for the forward and backward buttons
+prevBtns.forEach((btn) =>
+  btn.addEventListener("click", () => {
+    optionCountEls[currentPage].classList.remove("selected");
+    showPage(currentPage - 1);
+  })
+);
+nextBtns.forEach((btn, i) =>
+  btn.addEventListener("click", () => {
+    if (i !== nextBtns.length - 1) {
+      showPage(currentPage + 1);
+    }
+  })
+);
+
+form.addEventListener("submit", function (ev) {
+  ev.preventDefault();
+  displayFinalMessage();
+});
 
 const formStates = ["info", "plans", "add-ons", "summary", "thankyou"];
 const monthlyPlan = [
@@ -67,36 +120,34 @@ const servicesOffered = [
 ];
 let currentState = "info";
 
-function selectPlan(planObj) {
-  optionCountEls[0].classList.remove("selected");
-  optionCountEls[1].classList.add("selected");
-  prevBtn.style.display = "block";
-  infoSectionEl.style.display = "none";
-  planSectionEl.style.display = "block";
-
-  let mode = "monthly";
+function selectPlan() {
+  plan.name = "Arcade";
+  plan.mode = "monthly";
+  plan.price = "9";
   // initial setup of plans
-  createPlan(mode, monthlyPlan, planObj);
+  createPlan("monthly", monthlyPlan);
 
-  const paymentMode = function () {
+  const planMode = function () {
     const btnCheckd = document.querySelector(
       '.toggle-btn input[type="radio"]:checked'
     );
-    planObj.planMode = btnCheckd.value;
+    // updates object state
+    plan.mode = btnCheckd.value;
+
     if (btnCheckd.value == "monthly") {
-      createPlan(btnCheckd.value, monthlyPlan, planObj);
+      createPlan(btnCheckd.value, monthlyPlan);
     } else {
-      createPlan(btnCheckd.value, yearlyPlan, planObj);
+      createPlan(btnCheckd.value, yearlyPlan);
     }
   };
 
   const monthlyRadioBtn = document.getElementById("monthly-plan");
   const yearlyRadioBtn = document.getElementById("yearly-plan");
-  monthlyRadioBtn.addEventListener("click", paymentMode);
-  yearlyRadioBtn.addEventListener("click", paymentMode);
+  monthlyRadioBtn.addEventListener("click", planMode);
+  yearlyRadioBtn.addEventListener("click", planMode);
 }
 
-function createPlan(planType, planData, planObj) {
+function createPlan(planType, planData) {
   const plansEl = [];
 
   for (let i = 0; i < planData.length; i++) {
@@ -108,7 +159,12 @@ function createPlan(planType, planData, planObj) {
     const labelEl = document.createElement("label");
     labelEl.setAttribute("for", planName);
     // BUG: ADDING / to the values by default
-    const radioBtnEl = `<input type="radio" name="plan" id=${planName} value=${planName}/>`;
+    let radioBtnEl = "";
+    if (i == 0) {
+      radioBtnEl = `<input type="radio" name="plan" id=${planName} value=${planName} checked/>`;
+    } else {
+      radioBtnEl = `<input type="radio" name="plan" id=${planName} value=${planName}/>`;
+    }
 
     card.innerHTML = radioBtnEl;
     card.appendChild(labelEl);
@@ -127,10 +183,8 @@ function createPlan(planType, planData, planObj) {
     let spanEl;
     if (planType == "monthly") {
       cardContent.innerHTML += `<p>$<span class="price">${plan.price}</span>/mo</p>`;
-      // spanEl = `$<span class="price">${plan.price}/mo`;
     } else {
       cardContent.innerHTML += `<p>$<span class="price">${plan.price}</span>/yo</p>`;
-      // spanEl = `$<span class="price">${plan.price}/yo`;
     }
 
     paraEl.innerHTML = spanEl;
@@ -141,8 +195,6 @@ function createPlan(planType, planData, planObj) {
     containerEl.appendChild(imgEl);
     containerEl.append(cardContent);
 
-    // cardContent.appendChild(paraEl);
-
     if (planType == "yearly") {
       const content = document.createElement("p");
       content.textContent = "2 months free";
@@ -150,18 +202,22 @@ function createPlan(planType, planData, planObj) {
     }
     plansEl.push(card);
   }
+  console.log("create plan function: ", plan);
+  plansEl.forEach((plan) => {
+    plan
+      .querySelector(".plan-container")
+      .addEventListener("click", function () {
+        setTimeout(updateSelectedPlanStateInplan, 500);
+      });
 
+    plan
+      .querySelector(".plan-container")
+      .addEventListener("click", createServices);
+  });
   displayPlans(plansEl);
-  nextBtn.removeEventListener("click", validateField);
-  nextBtn.addEventListener("click", addOnStep.bind(null, planObj));
 }
 
-function addOnStep(planObj) {
-  optionCountEls[1].classList.remove("selected");
-  optionCountEls[2].classList.add("selected");
-  planSectionEl.style.display = "none";
-  addOnsSectionEl.style.display = "block";
-  // getSelectedPlan();
+function updateSelectedPlanStateInplan() {
   let selectedPlan = document.querySelector(
     '.plan input[type="radio"]:checked'
   );
@@ -172,67 +228,54 @@ function addOnStep(planObj) {
     '.toggle-btn input[type="radio"]:checked'
   );
 
-  const temp = selectedPlan.value;
+  // const temp = selectedPlan.value;
 
-  selectedPlan = temp.slice(0, -1);
+  // selectedPlan = temp.slice(0, -1);
   // plan.name = selectedPlan;
-  planObj.plan = {
-    plan: selectedPlan,
-    mode: planModeChoose.value,
-    price: selectedPlanPrice, // price needs to be added
-  };
-  // console.log(planObj);
-  const ctn = document.querySelector(".services-container");
-  ctn.innerHTML = "";
-  createServices(ctn, planObj, planModeChoose.value);
-
-  nextBtn.removeEventListener("click", addOnStep);
-  nextBtn.addEventListener("click", goToSummary.bind(null, planObj));
+  plan.name = selectedPlan.value;
+  plan.mode = planModeChoose.value;
+  plan.price = selectedPlanPrice; // price needs to be added
+  console.log("state updated: ", plan);
 }
 
-function goToSummary(planObj) {
-  optionCountEls[2].classList.remove("selected");
-  optionCountEls[3].classList.add("selected");
+function createSummary() {
+  getService();
 
-  addOnsSectionEl.style.display = "none";
-  finalSubmissionSectionEl.style.display = "block";
   const billingAreaEl = document.querySelector(".billing-area");
   const headingEl = billingAreaEl.querySelector(".heading-secondary");
   let totalBill = 0;
 
-  const planSelected = planObj.plan;
-  console.log("plan selected ", planSelected);
-  headingEl.innerHTML = `${planSelected.plan}(${planSelected.mode})`;
+  headingEl.innerHTML = `${plan.name}(${plan.mode})`;
+  headingEl.style.textTransform = "capitalize";
 
   const planChoosedEl = billingAreaEl.querySelector(".plan-choosed");
   planChoosedEl.querySelector("p").innerHTML = `$<span class="plan-price">${
-    planSelected.price
-  }</span>/${planSelected.mode == "monthly" ? "mo" : "yo"}</p>`;
-  totalBill += Number(planSelected.price);
+    plan.price
+  }</span>/${plan.mode == "monthly" ? "mo" : "yo"}</p>`;
+  totalBill += Number(plan.price);
 
   const parentDiv = billingAreaEl.querySelector(".add-ons-bill");
   parentDiv.innerHTML = "";
-  for (let plan of planObj.services) {
+  console.log("summary ", plan.servicesChoosed);
+  for (let service of plan.servicesChoosed) {
     const div = document.createElement("div");
     div.classList.add("display-flex");
-    const serviceName = `<p>${plan.serviceName}</p>`;
-    const servicePrice = `<p class="add-ons-price">+${plan.price}$/mo</p>`;
-    totalBill += Number(plan.price);
+    const serviceName = `<p>${service.name}</p>`;
+    const servicePrice = `<p class="add-ons-price">+${service.price}$/mo</p>`;
+    totalBill += Number(service.price);
     div.innerHTML = serviceName;
     div.innerHTML += servicePrice;
     parentDiv.appendChild(div);
   }
   const amountSpanEl = billingAreaEl.querySelector(".amount");
   amountSpanEl.textContent = totalBill;
-
-  nextBtn.removeEventListener("click", goToSummary);
-  nextBtn.addEventListener("click", displayFinalMessage);
 }
 
 function displayFinalMessage() {
-  finalSubmissionSectionEl.style.display = "none";
+  console.log("hey");
+  form.style.display = "none";
   thankyouSectionEl.style.display = "block";
-  btnContainerEl.style.display = "none";
+  // btnContainerEl.style.display = "none";
 }
 
 function displayPlans(plans) {
@@ -243,17 +286,17 @@ function displayPlans(plans) {
   }
 }
 
-function validateField(ev) {
+function validateField() {
   const userName = document.getElementById("user-name");
   const userEmail = document.getElementById("user-email");
   const userContact = document.getElementById("user-contact");
 
-  const formInputContainers = infoFormEl.querySelectorAll("div");
+  const formInputContainers = form.querySelectorAll("div");
 
   const isFieldEmpty =
     userName.value == "" || userEmail.value == "" || userContact.value == "";
   if (isFieldEmpty) {
-    ev.preventDefault();
+    console.log("field empty");
   }
   if (userName.value == "") {
     userName.style.borderColor = "red";
@@ -268,14 +311,10 @@ function validateField(ev) {
     formInputContainers[2].appendChild(createParaEl());
   }
 
-  const planObject = {};
   if (!isFieldEmpty) {
-    planObject.userName = userName.value;
-    planObject.userEmail = userEmail.value;
-    planObject.userContact = userContact.value;
-    ev.preventDefault();
-    // console.log("validate field ", planObject);
-    selectPlan(planObject);
+    plan.userName = userName.value;
+    plan.userEmail = userEmail.value;
+    plan.userContact = userContact.value;
   }
 }
 
@@ -288,7 +327,9 @@ function createParaEl() {
   return paraEl;
 }
 
-function createServices(ctn, planObj, planMode) {
+function createServices() {
+  const ctn = document.querySelector(".services-container");
+  ctn.innerHTML = "";
   for (let i = 0; i < servicesOffered.length; i++) {
     const service = servicesOffered[i];
     let serviceName = service.name.toLowerCase();
@@ -306,7 +347,7 @@ function createServices(ctn, planObj, planMode) {
   </label>`;
 
     let paraEl = "";
-    if (planMode == "monthly") {
+    if (plan.mode == "monthly") {
       paraEl = `<p>+$<span class="add-ons-price">${service.price}</span>/mo</p>`;
     } else {
       paraEl = `<p>+$<span class="add-ons-price">${service.price}</span>/yo</p>`;
@@ -315,27 +356,29 @@ function createServices(ctn, planObj, planMode) {
     parentDiv.appendChild(childDiv);
     childDiv.innerHTML = labelEl;
     parentDiv.innerHTML += paraEl;
-    parentDiv.addEventListener("click", getService.bind(null, planObj));
+    // parentDiv.addEventListener("click", getService);
+    parentDiv.addEventListener("click", createSummary);
     ctn.appendChild(parentDiv);
   }
 }
 
-function getService(planObj) {
-  const servicesChoosed = [];
+function getService() {
+  plan.servicesChoosed = [];
   const serviceEls = document.querySelectorAll(".service");
   for (let i = 0; i < serviceEls.length; i++) {
     const addOn = {};
     const el = serviceEls[i];
     const isChecked = el.querySelector('input[type="checkbox"').checked;
-
+    console.log("checkbox checked in services ", isChecked);
     if (isChecked) {
-      addOn.serviceName = el.querySelector(".heading-secondary").textContent;
+      addOn.name = el.querySelector(".heading-secondary").textContent;
       addOn.price = el.querySelector(".add-ons-price").textContent;
-      servicesChoosed.push(addOn);
+      plan.servicesChoosed.push(addOn);
     }
   }
-  planObj.services = servicesChoosed;
-  console.log(servicesChoosed);
-  // console.log(planObj);
+  console.log("inside get service ", plan.servicesChoosed);
+  console.log(plan);
 }
-nextBtn.addEventListener("click", validateField);
+
+validateField();
+selectPlan();
