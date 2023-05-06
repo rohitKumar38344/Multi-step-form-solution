@@ -287,44 +287,22 @@ function displayPlans(plans) {
 }
 
 function validateField() {
-  const userName = document.getElementById("user-name");
-  const userEmail = document.getElementById("user-email");
-  const userContact = document.getElementById("user-contact");
+  const inputs = form.querySelectorAll("input");
+  const errorMessages = form.querySelectorAll(".error-message");
 
-  const formInputContainers = form.querySelectorAll("div");
+  inputs.forEach((input, index) => {
+    input.addEventListener("blur", () => {
+      if (input.value === "") {
+        errorMessages[index].classList.add("show");
+      }
+    });
 
-  const isFieldEmpty =
-    userName.value == "" || userEmail.value == "" || userContact.value == "";
-  if (isFieldEmpty) {
-    console.log("field empty");
-  }
-  if (userName.value == "") {
-    userName.style.borderColor = "red";
-    formInputContainers[0].appendChild(createParaEl());
-  }
-  if (userEmail.value == "") {
-    userEmail.style.borderColor = "red";
-    formInputContainers[1].appendChild(createParaEl());
-  }
-  if (userContact.value == "") {
-    userContact.style.borderColor = "red";
-    formInputContainers[2].appendChild(createParaEl());
-  }
-
-  if (!isFieldEmpty) {
-    plan.userName = userName.value;
-    plan.userEmail = userEmail.value;
-    plan.userContact = userContact.value;
-  }
-}
-
-function createParaEl() {
-  const paraEl = document.createElement("p");
-  paraEl.textContent = "This filed is required";
-  paraEl.style.color = "red";
-  paraEl.style.position = "absolute";
-  paraEl.style.right = "5px";
-  return paraEl;
+    input.addEventListener("input", () => {
+      if (input.value !== "") {
+        errorMessages[index].classList.remove("show");
+      }
+    });
+  });
 }
 
 function createServices() {
