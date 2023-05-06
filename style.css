@@ -167,10 +167,6 @@ body {
   margin-bottom: 3.8rem;
 }
 
-.plan {
-  /* width: 100%; */
-}
-
 .plans input[type="radio"] {
   position: absolute;
   opacity: 0;
