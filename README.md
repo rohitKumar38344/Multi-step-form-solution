@@ -36,8 +36,8 @@ Users should be able to:
 
 ### Links
 
-- Solution URL: [source code](https://your-solution-url.com)
-- Live Site URL: [watch live ](https://your-live-site-url.com)
+- Solution URL: [source code](https://github.com/rohitKumar38344/Multi-step-form-solution)
+- Live Site URL: [watch live ](https://sage-melba-e7b351.netlify.app/)
 
 ## My process
 
